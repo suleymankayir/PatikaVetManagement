@@ -53,7 +53,7 @@ public class AppointmentController {
         return ResultHelper.created(this.modelMapper.forResponse().map(saveAppointment, AppointmentResponse.class));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<AppointmentResponse>> cursor(
             @RequestParam(name = "page", required = false,defaultValue = "0") int page,
@@ -63,6 +63,14 @@ public class AppointmentController {
         Page<AppointmentResponse> appointmentResponsePage = appointmentPage
                 .map(appointment -> this.modelMapper.forResponse().map(appointment,AppointmentResponse.class));
         return ResultHelper.cursor(appointmentResponsePage);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<AppointmentResponse> get(@PathVariable("id") Long id){
+        Appointment appointment = this.appointmentService.get(id);
+        AppointmentResponse appointmentResponse = this.modelMapper.forResponse().map(appointment,AppointmentResponse.class);
+        return ResultHelper.success(appointmentResponse);
     }
 
     @PutMapping()

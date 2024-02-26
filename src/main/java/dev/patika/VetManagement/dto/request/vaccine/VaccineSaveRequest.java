@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VaccineSaveRequest {
-    @NotNull
+    @NotNull(message = "Aşı ismi girilmesi zorunludur")
     private String name;
-    @NotNull
+    @NotNull(message = "Aşı kodu girilmesi zorunludur")
     private String code;
 
     private LocalDate startDate;

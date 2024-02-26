@@ -2,6 +2,7 @@ package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.ICustomerService;
 import dev.patika.VetManagement.core.exception.CustomerAlreadyExistException;
+import dev.patika.VetManagement.core.exception.NoExistanceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.utilities.Msg;
@@ -45,12 +46,17 @@ public class CustomerManager implements ICustomerService {
 
     @Override
     public Customer update(Customer customer) {
+        Optional<Customer> customerFromDb = this.customerRepo.findByNameAndPhone(customer.getName(),customer.getPhone());
+        if (customerFromDb.isEmpty()){
+            throw new NotFoundException("Bu bilgilere sahip bir müşteri bulunamadı");
+        }
         this.get(customer.getId());
         return this.customerRepo.save(customer);
     }
 
     @Override
     public boolean delete(Long id) {
+
         Customer customer = this.get(id);
         this.customerRepo.delete(customer);
         return true;
@@ -58,6 +64,11 @@ public class CustomerManager implements ICustomerService {
 
     @Override
     public Customer findByCustomerName(String name) {
-        return this.customerRepo.findByName(name);
+
+        Customer customer = this.customerRepo.findByName(name);
+        if (customer == null){
+            throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır");
+        }
+        return customer;
     }
 }

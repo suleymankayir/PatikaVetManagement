@@ -20,10 +20,10 @@ public class Vaccine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vaccine_id", columnDefinition = "serial")
     private Long id;
-    @UniqueElements(message = "Aşı ismi eşsiz olmalıdır.")
+
     @Column(name = "vaccine_name")
     private String name;
-    @UniqueElements(message = "Aşı kodu eşsiz olmalıdır.")
+
     @Column(name = "vaccine_code")
     private String code;
 

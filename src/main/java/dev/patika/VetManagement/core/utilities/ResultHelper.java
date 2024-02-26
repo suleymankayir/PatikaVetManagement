@@ -22,6 +22,9 @@ public class ResultHelper {
     public static Result notFoundError(String msg){
         return new Result(false, msg,"404");
     }
+    public static Result nullError(String msg){
+        return new Result(false,msg,"404");
+    }
 
     public static <T> ResultData<CursorResponse<T>> cursor(Page<T> pageData){
         CursorResponse<T> cursor = new CursorResponse<>();
