@@ -70,6 +70,7 @@ public class AnimalController {
     public ResultData<AnimalResponse> update(@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest) {
         this.animalService.get(animalUpdateRequest.getId());
         Animal updateAnimal = this.modelMapper.forRequest().map(animalUpdateRequest, Animal.class);
+
         this.animalService.update(updateAnimal);
         return ResultHelper.success(this.modelMapper.forResponse().map(updateAnimal, AnimalResponse.class));
     }
@@ -80,4 +81,12 @@ public class AnimalController {
         this.animalService.delete(id);
         return ResultHelper.ok();
     }
+
+    @GetMapping("/name/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<AnimalResponse> getAnimalByName(@PathVariable("name") String name){
+        Animal animal = this.animalService.findByAnimalName(name);
+        return ResultHelper.success(this.modelMapper.forResponse().map(animal,AnimalResponse.class));
+    }
+
 }

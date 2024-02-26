@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AnimalManager implements IAnimalService {
 
@@ -47,4 +49,11 @@ public class AnimalManager implements IAnimalService {
         this.animalRepo.delete(animal);
         return true;
     }
+
+    @Override
+    public Animal findByAnimalName(String name) {
+        return this.animalRepo.findByName(name);
+    }
+
+
 }

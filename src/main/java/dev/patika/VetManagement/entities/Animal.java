@@ -23,19 +23,19 @@ public class Animal {
     @Column(name = "animal_id",columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "animal_name")
+    @Column(name = "animal_name",nullable = false)
     private String name;
 
-    @Column(name = "animal_species")
+    @Column(name = "animal_species",nullable = false)
     private String species;
 
-    @Column(name = "animal_breed")
+    @Column(name = "animal_breed",nullable = false)
     private String breed;
 
-    @Column(name = "animal_gender")
+    @Column(name = "animal_gender",nullable = false)
     private String gender;
 
-    @Column(name = "animal_color")
+    @Column(name = "animal_color",nullable = false)
     private String color;
 
     @Column(name = "animal_date_of_birth")

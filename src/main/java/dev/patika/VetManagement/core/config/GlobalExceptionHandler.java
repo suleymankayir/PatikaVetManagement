@@ -1,5 +1,6 @@
 package dev.patika.VetManagement.core.config;
 
+import dev.patika.VetManagement.core.exception.CustomerAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
@@ -28,6 +29,11 @@ public class GlobalExceptionHandler {
                 .stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
 
         return new ResponseEntity<>(ResultHelper.validateError(validationErrorList), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    public ResponseEntity<Result> handleCustomerAlreadyExistException(CustomerAlreadyExistException e){
+        return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()),HttpStatus.ALREADY_REPORTED);
     }
 
 }

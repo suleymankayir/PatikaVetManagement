@@ -20,7 +20,7 @@ public class Doctor {
     @Column(name = "doctor_id", columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "doctor_name")
+    @Column(name = "doctor_name",nullable = false)
     private String name;
 
     @Column(name = "doctor_phone")

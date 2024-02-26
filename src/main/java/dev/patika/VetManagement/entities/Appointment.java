@@ -20,7 +20,7 @@ public class Appointment {
     @Column(name = "appointment_id",columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "appointment_date")
+    @Column(name = "appointment_date",nullable = false)
     private LocalDateTime appointmentDate;
 
     @JsonManagedReference

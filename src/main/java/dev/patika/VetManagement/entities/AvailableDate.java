@@ -20,7 +20,7 @@ public class AvailableDate {
     @Column(name = "availabledate_id",columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "available_date")
+    @Column(name = "available_date",nullable = false)
     private LocalDate availableDate;
 
     @JsonManagedReference

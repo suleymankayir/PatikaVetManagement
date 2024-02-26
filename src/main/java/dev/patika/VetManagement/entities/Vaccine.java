@@ -27,10 +27,10 @@ public class Vaccine {
     @Column(name = "vaccine_code")
     private String code;
 
-    @Column(name = "vaccine_protection_start_date")
+    @Column(name = "vaccine_protection_start_date",nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "vaccine_protection_finish_date")
+    @Column(name = "vaccine_protection_finish_date",nullable = false)
     private LocalDate finishDate;
 
     @JsonManagedReference

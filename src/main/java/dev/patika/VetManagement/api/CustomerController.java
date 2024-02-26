@@ -10,11 +10,15 @@ import dev.patika.VetManagement.dto.request.customer.CustomerUpdateRequest;
 import dev.patika.VetManagement.dto.response.CursorResponse;
 import dev.patika.VetManagement.dto.response.animal.AnimalResponse;
 import dev.patika.VetManagement.dto.response.customer.CustomerResponse;
+import dev.patika.VetManagement.entities.Animal;
 import dev.patika.VetManagement.entities.Customer;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -80,10 +84,25 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> getCustomerByName(@PathVariable("name") String name){
         Customer customer = this.customerService.findByCustomerName(name);
-        System.out.println(customer.getName());
+
 
 
         return ResultHelper.success(this.modelMapper.forResponse().map(customer, CustomerResponse.class));
+    }
+
+    @GetMapping("/{id}/animals")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<AnimalResponse>>getAnimals(@PathVariable("id") Long id){
+        Customer customer = this.customerService.get(id);
+        List<Animal> animals = customer.getAnimal();
+        List<AnimalResponse> animalResponses = new ArrayList<>();
+
+        for (Animal animal : animals) {
+            animalResponses.add(this.modelMapper.forResponse().map(animal, AnimalResponse.class));
+        }
+
+        return ResultHelper.success(animalResponses);
+
     }
 
 
