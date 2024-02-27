@@ -1,6 +1,7 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.IDoctorService;
+import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.DoctorRepo;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class DoctorManager implements IDoctorService {
@@ -21,6 +24,10 @@ public class DoctorManager implements IDoctorService {
 
     @Override
     public Doctor save(Doctor doctor) {
+        Optional<Doctor> doctorFromDb = this.doctorRepo.findByMail(doctor.getMail());
+        if (doctorFromDb.isPresent()){
+            throw new EntityAlreadyExistException(doctorFromDb.get().getId(),Doctor.class);
+        }
         return this.doctorRepo.save(doctor);
     }
 
@@ -37,6 +44,10 @@ public class DoctorManager implements IDoctorService {
 
     @Override
     public Doctor update(Doctor doctor) {
+        Optional<Doctor> doctorFromDb = this.doctorRepo.findByMail(doctor.getMail());
+        if (doctorFromDb.isEmpty()){
+            throw new NotFoundException("Bu bilgilere sahip bir doktor bulunmamaktadır");
+        }
         this.get(doctor.getId());
         return this.doctorRepo.save(doctor);
     }

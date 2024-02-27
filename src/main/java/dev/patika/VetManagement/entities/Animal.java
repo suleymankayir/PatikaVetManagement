@@ -50,7 +50,7 @@ public class Animal {
     private List<Appointment> appointmentList;
 
     @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "animal_customer_id",referencedColumnName = "customer_id")
     private Customer customer;
 

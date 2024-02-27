@@ -1,10 +1,9 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.ICustomerService;
-import dev.patika.VetManagement.core.exception.CustomerAlreadyExistException;
+import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NoExistanceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
-import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.CustomerRepo;
 import dev.patika.VetManagement.entities.Customer;
@@ -26,9 +25,9 @@ public class CustomerManager implements ICustomerService {
 
     @Override
     public Customer save(Customer customer) {
-        Optional<Customer> customerFromDb = customerRepo.findByNameAndPhone(customer.getName(), customer.getPhone());
+        Optional<Customer> customerFromDb = this.customerRepo.findByNameAndPhone(customer.getName(), customer.getPhone());
         if (customerFromDb.isPresent()) {
-            throw new CustomerAlreadyExistException(customerFromDb.get().getId());
+            throw new EntityAlreadyExistException(customerFromDb.get().getId(),Customer.class);
         }
             return this.customerRepo.save(customer);
     }
@@ -67,7 +66,7 @@ public class CustomerManager implements ICustomerService {
 
         Customer customer = this.customerRepo.findByName(name);
         if (customer == null){
-            throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır");
+            throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır.");
         }
         return customer;
     }

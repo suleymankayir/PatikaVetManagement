@@ -1,6 +1,8 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.IAnimalService;
+import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
+import dev.patika.VetManagement.core.exception.NoExistanceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.AnimalRepo;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AnimalManager implements IAnimalService {
@@ -23,6 +26,10 @@ public class AnimalManager implements IAnimalService {
 
     @Override
     public Animal save(Animal animal) {
+        Optional<Animal> animalFromDb = animalRepo.findByNameAndSpeciesAndBreedAndGenderAndColor(animal.getName(),animal.getSpecies(),animal.getBreed(),animal.getGender(),animal.getColor());
+        if (animalFromDb.isPresent()){
+            throw new EntityAlreadyExistException(animalFromDb.get().getId(),Animal.class);
+        }
         return this.animalRepo.save(animal);
     }
 
@@ -39,6 +46,10 @@ public class AnimalManager implements IAnimalService {
 
     @Override
     public Animal update(Animal animal) {
+        Optional<Animal> animalFromDb = this.animalRepo.findByNameAndSpeciesAndBreedAndGenderAndColor(animal.getName(),animal.getSpecies(),animal.getBreed(),animal.getGender(),animal.getColor());
+        if (animalFromDb.isEmpty()) {
+            throw new NotFoundException("Bu bilgilere sahip bir müşteri bulunamadı");
+        }
         this.get(animal.getId());
         return this.animalRepo.save(animal);
     }
@@ -52,6 +63,11 @@ public class AnimalManager implements IAnimalService {
 
     @Override
     public Animal findByAnimalName(String name) {
+
+        Animal animal = this.animalRepo.findByName(name);
+        if (animal == null){
+            throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır.");
+        }
         return this.animalRepo.findByName(name);
     }
 

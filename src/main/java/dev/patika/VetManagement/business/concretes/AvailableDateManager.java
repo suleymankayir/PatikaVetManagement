@@ -1,6 +1,7 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.IAvailableDateService;
+import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.AvailableDateRepo;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AvailableDateManager implements IAvailableDateService {
@@ -21,6 +24,10 @@ public class AvailableDateManager implements IAvailableDateService {
 
     @Override
     public AvailableDate save(AvailableDate availableDate) {
+        Optional<AvailableDate> availableDateFromDb = this.availableDateRepo.findByAvailableDate(availableDate.getAvailableDate());
+        if (availableDateFromDb.isPresent()){
+            throw new EntityAlreadyExistException(availableDateFromDb.get().getId(), AvailableDate.class);
+        }
         return this.availableDateRepo.save(availableDate);
     }
 
@@ -37,6 +44,10 @@ public class AvailableDateManager implements IAvailableDateService {
 
     @Override
     public AvailableDate update(AvailableDate availableDate) {
+        Optional<AvailableDate> availableDateFromDb = this.availableDateRepo.findByAvailableDate(availableDate.getAvailableDate());
+        if (availableDateFromDb.isEmpty()){
+            throw new NotFoundException("Bu bilgilere sahip bir gün bilgisi bulunmamaktadır.");
+        }
         this.get(availableDate.getId());
         return this.availableDateRepo.save(availableDate);
     }

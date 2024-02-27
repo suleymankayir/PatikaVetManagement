@@ -9,13 +9,20 @@ import dev.patika.VetManagement.core.utilities.ResultHelper;
 import dev.patika.VetManagement.dto.request.vaccine.VaccineSaveRequest;
 import dev.patika.VetManagement.dto.request.vaccine.VaccineUpdateRequest;
 import dev.patika.VetManagement.dto.response.CursorResponse;
+import dev.patika.VetManagement.dto.response.animal.AnimalResponse;
 import dev.patika.VetManagement.dto.response.vaccine.VaccineResponse;
 import dev.patika.VetManagement.entities.Animal;
 import dev.patika.VetManagement.entities.Vaccine;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/vaccines")
@@ -79,5 +86,39 @@ public class VaccineController {
         return ResultHelper.ok();
     }
 
+    @GetMapping("/{id}/animalvaccines")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<VaccineResponse>> getAnimals(@PathVariable("id")Long id){
+
+      Animal animal = animalService.get(id);
+      List<Vaccine> vaccineList = animal.getVaccineList();
+      List<VaccineResponse> vaccineResponseList = new ArrayList<>();
+
+      for (Vaccine vaccine : vaccineList ){
+          vaccineResponseList.add(this.modelMapper.forResponse().map(vaccine,VaccineResponse.class));
+      }
+
+      return ResultHelper.success(vaccineResponseList);
+    }
+
+    @GetMapping("/vaccineByDate")
+    public List<Vaccine> getAnimalsByVaccine(
+            @RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(name = "finishDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate finishDate
+    ) {
+          return this.vaccineService.getVaccinesByDate(startDate, finishDate);
+    }
+
+
+
 
 }
+/*
+        List<Animal> animals = vaccineList.stream().map(Vaccine::getAnimal).collect(Collectors.toList());
+        List<AnimalResponse> animalResponses = animals.stream()
+                .map(animal -> modelMapper.forResponse().map(animal, AnimalResponse.class))
+                .collect(Collectors.toList());
+
+        return ResultHelper.success(animalResponses);
+
+         */
