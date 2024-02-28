@@ -48,7 +48,7 @@ To install and run the Veterinary Management System, follow these steps:
 
 ## API Documentation
 
-Detailed documentation for the API endpoints can be found [here]().
+Detailed documentation for the API endpoints can be found [here](https://github.com/suleymankayir/PatikaVetManagement/blob/main/APIEndpoints.md).
 
 ## Technologies Used
 
