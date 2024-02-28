@@ -27,13 +27,13 @@ public class VaccineManager implements IVaccineService {
 
     @Override
     public Vaccine save(Vaccine vaccine) {
-        Optional<Vaccine> vaccineFromDb = this.vaccineRepo.findByNameAndCodeAndStartDateAndFinishDate(vaccine.getName(),vaccine.getCode(),vaccine.getStartDate(),vaccine.getFinishDate());
-        if (vaccineFromDb.isPresent()){
-            throw new EntityAlreadyExistException(vaccineFromDb.get().getId(),Vaccine.class);
+        Optional<Vaccine> vaccineFromDb = this.vaccineRepo.findByNameAndCodeAndStartDateAndFinishDate(vaccine.getName(), vaccine.getCode(), vaccine.getStartDate(), vaccine.getFinishDate());
+        if (vaccineFromDb.isPresent()) {
+            throw new EntityAlreadyExistException(vaccineFromDb.get().getId(), Vaccine.class);
         }
 
         LocalDate date = vaccine.getStartDate();
-        if (!vaccineRepo.existsByNameAndCodeAndAnimalAndFinishDateAfter(vaccine.getName(),vaccine.getCode(),vaccine.getAnimal(),date)){
+        if (!vaccineRepo.existsByNameAndCodeAndAnimalAndFinishDateAfter(vaccine.getName(), vaccine.getCode(), vaccine.getAnimal(), date)) {
             return this.vaccineRepo.save(vaccine);
         } else {
             throw new NotFoundException("Aşı koruyuculuk tarihi henüz bitmemiş");
@@ -43,12 +43,12 @@ public class VaccineManager implements IVaccineService {
 
     @Override
     public Vaccine get(Long id) {
-        return this.vaccineRepo.findById(Math.toIntExact(id)).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        return this.vaccineRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
 
     @Override
     public Page<Vaccine> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page,pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize);
         return this.vaccineRepo.findAll(pageable);
     }
 
@@ -67,7 +67,7 @@ public class VaccineManager implements IVaccineService {
 
     @Override
     public List<Vaccine> getVaccinesByDate(LocalDate startDate, LocalDate finishDate) {
-        return this.vaccineRepo.findByFinishDateBetween(startDate,finishDate);
+        return this.vaccineRepo.findByFinishDateBetween(startDate, finishDate);
     }
 
 

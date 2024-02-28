@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DoctorRepo extends JpaRepository<Doctor,Integer> {
+public interface DoctorRepo extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByMail(String mail);
+
+
 }

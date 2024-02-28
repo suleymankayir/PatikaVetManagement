@@ -8,6 +8,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-public interface AvailableDateRepo extends JpaRepository<AvailableDate,Integer> {
-    Optional<AvailableDate> findByAvailableDate(LocalDate availableDate);
+public interface AvailableDateRepo extends JpaRepository<AvailableDate,Long> {
+    Optional<AvailableDate> findByAvailableDateAndDoctorId(LocalDate availableDate,Long doctorId);
 }

@@ -24,8 +24,8 @@ public class AvailableDateManager implements IAvailableDateService {
 
     @Override
     public AvailableDate save(AvailableDate availableDate) {
-        Optional<AvailableDate> availableDateFromDb = this.availableDateRepo.findByAvailableDate(availableDate.getAvailableDate());
-        if (availableDateFromDb.isPresent()){
+        Optional<AvailableDate> availableDateFromDb = this.availableDateRepo.findByAvailableDateAndDoctorId(availableDate.getAvailableDate(), availableDate.getDoctor().getId());
+        if (availableDateFromDb.isPresent()) {
             throw new EntityAlreadyExistException(availableDateFromDb.get().getId(), AvailableDate.class);
         }
         return this.availableDateRepo.save(availableDate);
@@ -33,19 +33,19 @@ public class AvailableDateManager implements IAvailableDateService {
 
     @Override
     public AvailableDate get(Long id) {
-        return this.availableDateRepo.findById(Math.toIntExact(id)).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        return this.availableDateRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
 
     @Override
     public Page<AvailableDate> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page,pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize);
         return this.availableDateRepo.findAll(pageable);
     }
 
     @Override
     public AvailableDate update(AvailableDate availableDate) {
-        Optional<AvailableDate> availableDateFromDb = this.availableDateRepo.findByAvailableDate(availableDate.getAvailableDate());
-        if (availableDateFromDb.isEmpty()){
+        Optional<AvailableDate> availableDateFromDb = this.availableDateRepo.findByAvailableDateAndDoctorId(availableDate.getAvailableDate(), availableDate.getDoctor().getId());
+        if (availableDateFromDb.isEmpty()) {
             throw new NotFoundException("Bu bilgilere sahip bir gün bilgisi bulunmamaktadır.");
         }
         this.get(availableDate.getId());

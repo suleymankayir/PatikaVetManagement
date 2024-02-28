@@ -27,9 +27,9 @@ public class CustomerManager implements ICustomerService {
     public Customer save(Customer customer) {
         Optional<Customer> customerFromDb = this.customerRepo.findByNameAndPhone(customer.getName(), customer.getPhone());
         if (customerFromDb.isPresent()) {
-            throw new EntityAlreadyExistException(customerFromDb.get().getId(),Customer.class);
+            throw new EntityAlreadyExistException(customerFromDb.get().getId(), Customer.class);
         }
-            return this.customerRepo.save(customer);
+        return this.customerRepo.save(customer);
     }
 
     @Override
@@ -45,8 +45,8 @@ public class CustomerManager implements ICustomerService {
 
     @Override
     public Customer update(Customer customer) {
-        Optional<Customer> customerFromDb = this.customerRepo.findByNameAndPhone(customer.getName(),customer.getPhone());
-        if (customerFromDb.isEmpty()){
+        Optional<Customer> customerFromDb = this.customerRepo.findByNameAndPhone(customer.getName(), customer.getPhone());
+        if (customerFromDb.isEmpty()) {
             throw new NotFoundException("Bu bilgilere sahip bir müşteri bulunamadı");
         }
         this.get(customer.getId());
@@ -65,7 +65,7 @@ public class CustomerManager implements ICustomerService {
     public Customer findByCustomerName(String name) {
 
         Customer customer = this.customerRepo.findByName(name);
-        if (customer == null){
+        if (customer == null) {
             throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır.");
         }
         return customer;

@@ -2,7 +2,6 @@ package dev.patika.VetManagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dev.patika.VetManagement.core.utilities.LocalDateTimeDeserializer;
 
 import jakarta.persistence.*;
@@ -10,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,7 +24,7 @@ public class Appointment {
 
     @Column(name = "appointment_date",nullable = false)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime appointmentDate;
+    private LocalDateTime dateTime;
 
     @JsonManagedReference
     @ManyToOne

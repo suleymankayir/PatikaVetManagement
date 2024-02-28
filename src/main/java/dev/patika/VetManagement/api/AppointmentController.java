@@ -7,7 +7,6 @@ import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
-import dev.patika.VetManagement.dao.AppointmentRepo;
 import dev.patika.VetManagement.dto.request.appointment.AppointmentSaveRequest;
 import dev.patika.VetManagement.dto.request.appointment.AppointmentUpdateRequest;
 import dev.patika.VetManagement.dto.response.CursorResponse;
@@ -19,6 +18,9 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/appointments")
@@ -38,7 +40,7 @@ public class AppointmentController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest){
+    public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest) {
 
         Animal animal = this.animalService.get(appointmentSaveRequest.getAnimalId());
         appointmentSaveRequest.setAnimalId(0L);
@@ -56,36 +58,57 @@ public class AppointmentController {
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<AppointmentResponse>> cursor(
-            @RequestParam(name = "page", required = false,defaultValue = "0") int page,
-            @RequestParam(name = "pageSize", required = false,defaultValue = "10") int pageSize
-    ){
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
+    ) {
         Page<Appointment> appointmentPage = this.appointmentService.cursor(page, pageSize);
         Page<AppointmentResponse> appointmentResponsePage = appointmentPage
-                .map(appointment -> this.modelMapper.forResponse().map(appointment,AppointmentResponse.class));
+                .map(appointment -> this.modelMapper.forResponse().map(appointment, AppointmentResponse.class));
         return ResultHelper.cursor(appointmentResponsePage);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<AppointmentResponse> get(@PathVariable("id") Long id){
+    public ResultData<AppointmentResponse> get(@PathVariable("id") Long id) {
         Appointment appointment = this.appointmentService.get(id);
-        AppointmentResponse appointmentResponse = this.modelMapper.forResponse().map(appointment,AppointmentResponse.class);
+        AppointmentResponse appointmentResponse = this.modelMapper.forResponse().map(appointment, AppointmentResponse.class);
         return ResultHelper.success(appointmentResponse);
     }
 
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<AppointmentResponse> update(@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest){
+    public ResultData<AppointmentResponse> update(@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) {
         this.appointmentService.get(appointmentUpdateRequest.getId());
-        Appointment updateAppointment = this.modelMapper.forRequest().map(appointmentUpdateRequest,Appointment.class);
+        Appointment updateAppointment = this.modelMapper.forRequest().map(appointmentUpdateRequest, Appointment.class);
         this.appointmentService.update(updateAppointment);
-        return ResultHelper.success(this.modelMapper.forResponse().map(updateAppointment,AppointmentResponse.class));
+        return ResultHelper.success(this.modelMapper.forResponse().map(updateAppointment, AppointmentResponse.class));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Result delete(@PathVariable("id")Long id){
+    public Result delete(@PathVariable("id") Long id) {
         this.appointmentService.delete(id);
         return ResultHelper.ok();
     }
+
+    @GetMapping("/appointmentsByDoctor")
+    public List<Appointment> getAppointmentsByDoctor(
+            @RequestParam(name = "doctorId") Long doctorId,
+            @RequestParam(name = "startDate") LocalDate startDate,
+            @RequestParam(name = "endDate") LocalDate endDate
+    ) {
+        return this.appointmentService.getAppointmentsByDoctor(doctorId, startDate.atStartOfDay(), endDate.atStartOfDay());
+
+    }
+
+    @GetMapping("/appointmentsByAnimal")
+    public List<Appointment> getAppointmentsByAnimal(
+            @RequestParam(name = "animalId") Long animalId,
+            @RequestParam(name = "startDate") LocalDate startDate,
+            @RequestParam(name = "endDate") LocalDate endDate
+    ) {
+        return this.appointmentService.getAppointmentsByAnimal(animalId, startDate.atStartOfDay(), endDate.atStartOfDay());
+
+    }
+
 }

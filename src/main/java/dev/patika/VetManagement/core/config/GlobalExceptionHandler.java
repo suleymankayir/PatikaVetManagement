@@ -1,5 +1,6 @@
 package dev.patika.VetManagement.core.config;
 
+import dev.patika.VetManagement.core.exception.AppointmentExistException;
 import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NoExistanceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
@@ -20,12 +21,12 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Result> handleNotFoundException(NotFoundException e){
+    public ResponseEntity<Result> handleNotFoundException(NotFoundException e) {
         return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResultData<List<String>>> handleValidationErrors(MethodArgumentNotValidException e){
+    public ResponseEntity<ResultData<List<String>>> handleValidationErrors(MethodArgumentNotValidException e) {
         List<String> validationErrorList = e.getBindingResult().getFieldErrors()
                 .stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
 
@@ -33,13 +34,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntityAlreadyExistException.class)
-    public ResponseEntity<Result> handleCustomerAlreadyExistException(EntityAlreadyExistException e){
-        return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()),HttpStatus.ALREADY_REPORTED);
+    public ResponseEntity<Result> handleCustomerAlreadyExistException(EntityAlreadyExistException e) {
+        return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoExistanceException.class)
-    public ResponseEntity<Result> handleNoExistanceException(NoExistanceException e){
-        return new ResponseEntity<>(ResultHelper.nullError(e.getMessage()),HttpStatus.NOT_FOUND);
+    public ResponseEntity<Result> handleNoExistanceException(NoExistanceException e) {
+        return new ResponseEntity<>(ResultHelper.nullError(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AppointmentExistException.class)
+    public ResponseEntity<Result> handleAppointmentExistException(AppointmentExistException e) {
+        return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -25,27 +25,27 @@ public class DoctorManager implements IDoctorService {
     @Override
     public Doctor save(Doctor doctor) {
         Optional<Doctor> doctorFromDb = this.doctorRepo.findByMail(doctor.getMail());
-        if (doctorFromDb.isPresent()){
-            throw new EntityAlreadyExistException(doctorFromDb.get().getId(),Doctor.class);
+        if (doctorFromDb.isPresent()) {
+            throw new EntityAlreadyExistException(doctorFromDb.get().getId(), Doctor.class);
         }
         return this.doctorRepo.save(doctor);
     }
 
     @Override
     public Doctor get(Long id) {
-        return this.doctorRepo.findById(Math.toIntExact(id)).orElseThrow(()-> new NotFoundException(Msg.NOT_FOUND));
+        return this.doctorRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
 
     @Override
     public Page<Doctor> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page,pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize);
         return this.doctorRepo.findAll(pageable);
     }
 
     @Override
     public Doctor update(Doctor doctor) {
         Optional<Doctor> doctorFromDb = this.doctorRepo.findByMail(doctor.getMail());
-        if (doctorFromDb.isEmpty()){
+        if (doctorFromDb.isEmpty()) {
             throw new NotFoundException("Bu bilgilere sahip bir doktor bulunmamaktadır");
         }
         this.get(doctor.getId());

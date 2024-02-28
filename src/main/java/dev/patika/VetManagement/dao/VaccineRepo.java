@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface VaccineRepo extends JpaRepository<Vaccine,Integer> {
-    boolean existsByNameAndCodeAndAnimalAndFinishDateAfter(String name, String code,Animal animal, LocalDate date);
+public interface VaccineRepo extends JpaRepository<Vaccine, Long> {
+    boolean existsByNameAndCodeAndAnimalAndFinishDateAfter(String name, String code, Animal animal, LocalDate date);
 
     List<Vaccine> findByFinishDateBetween(LocalDate startDate, LocalDate finishDate);
 

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AppointmentSaveRequest {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime appointmentTime;
+    private LocalDateTime dateTime;
 
     private Long animalId;
 
