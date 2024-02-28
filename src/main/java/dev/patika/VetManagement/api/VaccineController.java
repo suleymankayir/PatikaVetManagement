@@ -29,13 +29,14 @@ public class VaccineController {
     private final IVaccineService vaccineService;
     private final IModelMapperService modelMapper;
     private final IAnimalService animalService;
-
+    // Constructor injecting necessary services for vaccine management
     public VaccineController(IVaccineService vaccineService, IModelMapperService modelMapper, IAnimalService animalService) {
         this.vaccineService = vaccineService;
         this.modelMapper = modelMapper;
         this.animalService = animalService;
     }
-
+    // Değerlendirme Formu - 15
+    // Endpoint to create a new vaccine
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<VaccineResponse> save(@Valid @RequestBody VaccineSaveRequest vaccineSaveRequest) {
@@ -48,7 +49,7 @@ public class VaccineController {
         this.vaccineService.save(saveVaccine);
         return ResultHelper.created(this.modelMapper.forResponse().map(saveVaccine, VaccineResponse.class));
     }
-
+    // Endpoint to retrieve a vaccine by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<VaccineResponse> get(@PathVariable("id") Long id) {
@@ -56,7 +57,7 @@ public class VaccineController {
         VaccineResponse vaccineResponse = this.modelMapper.forResponse().map(vaccine, VaccineResponse.class);
         return ResultHelper.success(vaccineResponse);
     }
-
+    // Endpoint to retrieve a paginated list of vaccines
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<VaccineResponse>> cursor(
@@ -68,7 +69,7 @@ public class VaccineController {
                 .map(vaccine -> this.modelMapper.forResponse().map(vaccine, VaccineResponse.class));
         return ResultHelper.cursor(vaccineResponsePage);
     }
-
+    // Endpoint to update an existing vaccine
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<VaccineResponse> update(@Valid @RequestBody VaccineUpdateRequest vaccineUpdateRequest) {
@@ -77,14 +78,15 @@ public class VaccineController {
         this.vaccineService.update(updateVaccine);
         return ResultHelper.success(this.modelMapper.forResponse().map(updateVaccine, VaccineResponse.class));
     }
-
+    // Endpoint to delete a vaccine by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {
         this.vaccineService.delete(id);
         return ResultHelper.ok();
     }
-
+    // Değerlendirme Formu - 20
+    // Endpoint to retrieve all vaccines of an animal by animal ID
     @GetMapping("/{id}/animalvaccines")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<VaccineResponse>> getAnimals(@PathVariable("id") Long id) {
@@ -99,7 +101,8 @@ public class VaccineController {
 
         return ResultHelper.success(vaccineResponseList);
     }
-
+    // Değerlendirme Formu - 21
+    // Endpoint to retrieve all vaccines within a date range
     @GetMapping("/vaccineByDate")
     public List<Vaccine> getAnimalsByVaccine(
             @RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,

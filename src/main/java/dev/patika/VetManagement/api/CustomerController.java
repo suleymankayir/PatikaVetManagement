@@ -28,12 +28,14 @@ public class CustomerController {
     private final ICustomerService customerService;
 
     private final IModelMapperService modelMapper;
-
+    // Constructor injecting necessary services for customer management
     public CustomerController(ICustomerService customerService, IModelMapperService modelMapper) {
         this.customerService = customerService;
         this.modelMapper = modelMapper;
     }
 
+    // Değerlendirme Formu - 10
+    // Endpoint to create a new customer
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<CustomerResponse> save(@Valid @RequestBody CustomerSaveRequest customerSaveRequest) {
@@ -42,7 +44,7 @@ public class CustomerController {
         return ResultHelper.created(this.modelMapper.forResponse().map(saveCustomer, CustomerResponse.class));
 
     }
-
+    // Endpoint to retrieve a paginated list of customers
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<CustomerResponse>> cursor(
@@ -54,7 +56,7 @@ public class CustomerController {
                 .map(customer -> this.modelMapper.forResponse().map(customer, CustomerResponse.class));
         return ResultHelper.cursor(customerResponsePage);
     }
-
+    // Endpoint to retrieve a customer by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> get(@PathVariable("id") Long id) {
@@ -62,7 +64,7 @@ public class CustomerController {
         CustomerResponse customerResponse = this.modelMapper.forResponse().map(customer, CustomerResponse.class);
         return ResultHelper.success(customerResponse);
     }
-
+    // Endpoint to update an existing customer
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> update(@Valid @RequestBody CustomerUpdateRequest customerUpdateRequest) {
@@ -71,7 +73,7 @@ public class CustomerController {
         this.customerService.update(updateCustomer);
         return ResultHelper.success(this.modelMapper.forResponse().map(updateCustomer, CustomerResponse.class));
     }
-
+    // Endpoint to delete a customer by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {
@@ -79,7 +81,8 @@ public class CustomerController {
         return ResultHelper.ok();
     }
 
-
+    // Değerlendirme Formu - 17
+    // Endpoint to retrieve a customer by name
     @GetMapping("/name/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> getCustomerByName(@PathVariable("name") String name) {
@@ -88,11 +91,12 @@ public class CustomerController {
 
         return ResultHelper.success(this.modelMapper.forResponse().map(customer, CustomerResponse.class));
     }
-
-    @GetMapping("/{id}/animals")
+    // Değerlendirme Formu - 18
+    // Endpoint to retrieve animals owned by a customer
+    @GetMapping("/{customerId}/animals")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<List<AnimalResponse>> getAnimals(@PathVariable("id") Long id) {
-        Customer customer = this.customerService.get(id);
+    public ResultData<List<AnimalResponse>> getAnimals(@PathVariable("customerId") Long customerId) {
+        Customer customer = this.customerService.get(customerId);
         List<Animal> animals = customer.getAnimal();
         List<AnimalResponse> animalResponses = new ArrayList<>();
 

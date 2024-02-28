@@ -22,13 +22,14 @@ public class DoctorController {
 
     private final IDoctorService doctorService;
     private final IModelMapperService modelMapper;
-
+    // Constructor injecting necessary services for doctor management
     public DoctorController(IDoctorService doctorService, IModelMapperService modelMapper) {
         this.doctorService = doctorService;
         this.modelMapper = modelMapper;
     }
 
-
+    // Değerlendirme Formu - 12
+    // Endpoint to create a new doctor
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<DoctorResponse> save(@Valid @RequestBody DoctorSaveRequest doctorSaveRequest) {
@@ -36,7 +37,7 @@ public class DoctorController {
         this.doctorService.save(saveDoctor);
         return ResultHelper.created(this.modelMapper.forResponse().map(saveDoctor, DoctorResponse.class));
     }
-
+    // Endpoint to retrieve a paginated list of doctors
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<DoctorResponse>> cursor(
@@ -49,7 +50,7 @@ public class DoctorController {
         return ResultHelper.cursor(doctorResponsePage);
 
     }
-
+    // Endpoint to retrieve a doctor by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<DoctorResponse> get(@PathVariable("id") Long id) {
@@ -57,7 +58,7 @@ public class DoctorController {
         DoctorResponse doctorResponse = this.modelMapper.forResponse().map(doctor, DoctorResponse.class);
         return ResultHelper.success(doctorResponse);
     }
-
+    // Endpoint to update an existing doctor
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<DoctorResponse> update(@Valid @RequestBody DoctorUpdateRequest doctorUpdateRequest) {
@@ -67,7 +68,7 @@ public class DoctorController {
         return ResultHelper.success(this.modelMapper.forResponse().map(updateDoctor, DoctorResponse.class));
 
     }
-
+    // Endpoint to delete a doctor by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {

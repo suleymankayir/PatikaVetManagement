@@ -25,13 +25,14 @@ public class AnimalController {
     private final IModelMapperService modelMapper;
 
     private final ICustomerService customerService;
-
+    // Constructor injecting necessary services for animal management
     public AnimalController(IAnimalService animalService, IModelMapperService modelMapper, ICustomerService customerService) {
         this.animalService = animalService;
         this.modelMapper = modelMapper;
         this.customerService = customerService;
     }
-
+    // Değerlendirme Formu - 11
+    // Endpoint to create a new animal
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AnimalResponse> save(@Valid @RequestBody AnimalSaveRequest animalSaveRequest) {
@@ -45,7 +46,7 @@ public class AnimalController {
         return ResultHelper.created(this.modelMapper.forResponse().map(saveAnimal, AnimalResponse.class));
 
     }
-
+    // Endpoint to retrieve an animal by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> get(@PathVariable("id") Long id) {
@@ -53,7 +54,7 @@ public class AnimalController {
         AnimalResponse animalResponse = this.modelMapper.forResponse().map(animal, AnimalResponse.class);
         return ResultHelper.success(animalResponse);
     }
-
+    // Endpoint to retrieve a paginated list of animals
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<AnimalResponse>> cursor(
@@ -64,7 +65,7 @@ public class AnimalController {
                 .map(animal -> this.modelMapper.forResponse().map(animal, AnimalResponse.class));
         return ResultHelper.cursor(animalResponsePage);
     }
-
+    // Endpoint to update an existing animal
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> update(@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest) {
@@ -74,7 +75,7 @@ public class AnimalController {
         this.animalService.update(updateAnimal);
         return ResultHelper.success(this.modelMapper.forResponse().map(updateAnimal, AnimalResponse.class));
     }
-
+    // Endpoint to delete an animal by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {
@@ -82,6 +83,9 @@ public class AnimalController {
         return ResultHelper.ok();
     }
 
+
+    // Değerlendirme Formu - 16
+    // Endpoint to retrieve an animal by name
     @GetMapping("/name/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> getAnimalByName(@PathVariable("name") String name) {

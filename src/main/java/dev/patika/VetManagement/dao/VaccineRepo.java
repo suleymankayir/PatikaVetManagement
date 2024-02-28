@@ -15,5 +15,7 @@ public interface VaccineRepo extends JpaRepository<Vaccine, Long> {
 
     List<Vaccine> findByFinishDateBetween(LocalDate startDate, LocalDate finishDate);
 
-    Optional<Vaccine> findByNameAndCodeAndStartDateAndFinishDate(String name, String code, LocalDate startDate, LocalDate finishDate);
+
+
+    Optional<Vaccine> findByNameAndCodeAndStartDateAndFinishDateAndAnimal(String name, String code, LocalDate startDate, LocalDate finishDate, Animal animal);
 }

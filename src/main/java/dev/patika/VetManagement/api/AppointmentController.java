@@ -30,14 +30,14 @@ public class AppointmentController {
     private final IModelMapperService modelMapper;
     private final IAnimalService animalService;
     private final IDoctorService doctorService;
-
+    // Constructor injecting necessary services for appointment management
     public AppointmentController(IAppointmentService appointmentService, IModelMapperService modelMapper, IAnimalService animalService, IDoctorService doctorService) {
         this.appointmentService = appointmentService;
         this.modelMapper = modelMapper;
         this.animalService = animalService;
         this.doctorService = doctorService;
     }
-
+    // Endpoint to create a new appointment
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest) {
@@ -54,7 +54,7 @@ public class AppointmentController {
         this.appointmentService.save(saveAppointment);
         return ResultHelper.created(this.modelMapper.forResponse().map(saveAppointment, AppointmentResponse.class));
     }
-
+    // Endpoint to retrieve appointments with pagination
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<AppointmentResponse>> cursor(
@@ -66,7 +66,7 @@ public class AppointmentController {
                 .map(appointment -> this.modelMapper.forResponse().map(appointment, AppointmentResponse.class));
         return ResultHelper.cursor(appointmentResponsePage);
     }
-
+    // Endpoint to retrieve a specific appointment by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AppointmentResponse> get(@PathVariable("id") Long id) {
@@ -74,7 +74,7 @@ public class AppointmentController {
         AppointmentResponse appointmentResponse = this.modelMapper.forResponse().map(appointment, AppointmentResponse.class);
         return ResultHelper.success(appointmentResponse);
     }
-
+    // Endpoint to update an existing appointment
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AppointmentResponse> update(@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) {
@@ -83,15 +83,17 @@ public class AppointmentController {
         this.appointmentService.update(updateAppointment);
         return ResultHelper.success(this.modelMapper.forResponse().map(updateAppointment, AppointmentResponse.class));
     }
-
+    // Endpoint to retrieve appointments for a specific doctor within a date range
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {
         this.appointmentService.delete(id);
         return ResultHelper.ok();
     }
-
+    // Değerlendirme Formu - 24
+    // Endpoint to retrieve appointments for a specific doctor within a date range
     @GetMapping("/appointmentsByDoctor")
+    @ResponseStatus(HttpStatus.OK)
     public List<Appointment> getAppointmentsByDoctor(
             @RequestParam(name = "doctorId") Long doctorId,
             @RequestParam(name = "startDate") LocalDate startDate,
@@ -100,8 +102,10 @@ public class AppointmentController {
         return this.appointmentService.getAppointmentsByDoctor(doctorId, startDate.atStartOfDay(), endDate.atStartOfDay());
 
     }
-
+    // Değerlendirme Formu - 23
+    // Endpoint to retrieve appointments for a specific animal within a date range
     @GetMapping("/appointmentsByAnimal")
+   @ResponseStatus(HttpStatus.OK)
     public List<Appointment> getAppointmentsByAnimal(
             @RequestParam(name = "animalId") Long animalId,
             @RequestParam(name = "startDate") LocalDate startDate,

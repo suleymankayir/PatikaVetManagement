@@ -27,11 +27,11 @@ public class VaccineManager implements IVaccineService {
 
     @Override
     public Vaccine save(Vaccine vaccine) {
-        Optional<Vaccine> vaccineFromDb = this.vaccineRepo.findByNameAndCodeAndStartDateAndFinishDate(vaccine.getName(), vaccine.getCode(), vaccine.getStartDate(), vaccine.getFinishDate());
+        Optional<Vaccine> vaccineFromDb = this.vaccineRepo.findByNameAndCodeAndStartDateAndFinishDateAndAnimal(vaccine.getName(), vaccine.getCode(), vaccine.getStartDate(), vaccine.getFinishDate(),vaccine.getAnimal());
         if (vaccineFromDb.isPresent()) {
             throw new EntityAlreadyExistException(vaccineFromDb.get().getId(), Vaccine.class);
         }
-
+        // Değerlendirme Formu - 19
         LocalDate date = vaccine.getStartDate();
         if (!vaccineRepo.existsByNameAndCodeAndAnimalAndFinishDateAfter(vaccine.getName(), vaccine.getCode(), vaccine.getAnimal(), date)) {
             return this.vaccineRepo.save(vaccine);

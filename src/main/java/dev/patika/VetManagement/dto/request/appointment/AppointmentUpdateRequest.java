@@ -16,7 +16,7 @@ public class AppointmentUpdateRequest {
 
     private Long id;
 
-    private LocalDate availableDate;
+    private LocalDate dateTime;
 
     private Long animalId;
 

@@ -36,13 +36,15 @@ public class AppointmentManager implements IAppointmentService {
         this.doctorRepo = doctorRepo;
         this.animalRepo = animalRepo;
     }
-
+    // Değerlendirme Formu - 14
     @Override
     public Appointment save(Appointment appointment) {
-        Optional<Appointment> appointmentFromDb = this.appointmentRepo.findByDateTime(appointment.getDateTime());
+        Optional<Appointment> appointmentFromDb = this.appointmentRepo.findByDateTimeAndAnimalAndDoctor(appointment.getDateTime(),appointment.getAnimal(),appointment.getDoctor());
         if (appointmentFromDb.isPresent()) {
             throw new EntityAlreadyExistException(appointmentFromDb.get().getId(), Appointment.class);
         }
+
+        // Değerlendirme Formu 22
 
         List<LocalDate> availableDates = appointment.getDoctor().getAvailableDateList().stream()
                 .map(AvailableDate::getAvailableDate)

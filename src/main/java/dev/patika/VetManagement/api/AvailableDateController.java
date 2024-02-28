@@ -25,13 +25,14 @@ public class AvailableDateController {
     private final IModelMapperService modelMapper;
     private final IDoctorService doctorService;
 
-
+    // Constructor injecting necessary services for available date management
     public AvailableDateController(IAvailableDateService availableDateService, IModelMapperService modelMapper, IDoctorService doctorService) {
         this.availableDateService = availableDateService;
         this.modelMapper = modelMapper;
         this.doctorService = doctorService;
     }
-
+    // Değerlendirme Formu - 13
+    // Endpoint to create a new available date
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AvailableDateResponse> save(@Valid @RequestBody AvailableDateSaveRequest availableDateSaveRequest) {
@@ -46,7 +47,7 @@ public class AvailableDateController {
 
 
     }
-
+    // Endpoint to retrieve an available date by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AvailableDateResponse> get(@PathVariable("id") Long id) {
@@ -54,7 +55,7 @@ public class AvailableDateController {
         AvailableDateResponse availableDateResponse = this.modelMapper.forResponse().map(availableDate, AvailableDateResponse.class);
         return ResultHelper.success(availableDateResponse);
     }
-
+    // Endpoint to retrieve a paginated list of available dates
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<AvailableDateResponse>> cursor(
@@ -66,7 +67,7 @@ public class AvailableDateController {
                 .map(availableDate -> this.modelMapper.forResponse().map(availableDate, AvailableDateResponse.class));
         return ResultHelper.cursor(availableDateResponsePage);
     }
-
+    // Endpoint to update an existing available date
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AvailableDateResponse> update(@Valid @RequestBody AvailableDateUpdateRequest availableDateUpdateRequest) {
@@ -75,7 +76,7 @@ public class AvailableDateController {
         this.availableDateService.update(date);
         return ResultHelper.success(this.modelMapper.forResponse().map(date, AvailableDateResponse.class));
     }
-
+    // Endpoint to delete an available date by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {

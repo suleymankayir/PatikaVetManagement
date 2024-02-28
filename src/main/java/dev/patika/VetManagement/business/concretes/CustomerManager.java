@@ -55,7 +55,6 @@ public class CustomerManager implements ICustomerService {
 
     @Override
     public boolean delete(Long id) {
-
         Customer customer = this.get(id);
         this.customerRepo.delete(customer);
         return true;

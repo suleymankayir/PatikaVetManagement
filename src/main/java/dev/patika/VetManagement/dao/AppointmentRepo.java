@@ -20,4 +20,6 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     List<Appointment> findByDateTimeBetweenAndDoctor(LocalDateTime startTime, LocalDateTime endTime, Doctor doctor);
 
     List<Appointment> findByDateTimeBetweenAndAnimal(LocalDateTime startTime, LocalDateTime endTime, Animal animal);
+
+    Optional<Appointment> findByDateTimeAndAnimalAndDoctor(LocalDateTime dateTime, Animal animal, Doctor doctor);
 }

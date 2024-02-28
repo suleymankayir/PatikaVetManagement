@@ -20,7 +20,7 @@ public class AppointmentResponse {
 
     private Long id;
 
-    private LocalDateTime appointmentTime;
+    private LocalDateTime dateTime;
 
     private Long animalId;
 
