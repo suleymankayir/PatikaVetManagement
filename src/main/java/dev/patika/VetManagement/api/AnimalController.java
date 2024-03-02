@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.*;
 public class AnimalController {
 
     private final IAnimalService animalService;
-    private final IModelMapperService modelMapper;
+
 
     private final ICustomerService customerService;
     // Constructor injecting necessary services for animal management
-    public AnimalController(IAnimalService animalService, IModelMapperService modelMapper, ICustomerService customerService) {
+    public AnimalController(IAnimalService animalService, ICustomerService customerService) {
         this.animalService = animalService;
-        this.modelMapper = modelMapper;
         this.customerService = customerService;
     }
     // Değerlendirme Formu - 11
@@ -39,11 +38,11 @@ public class AnimalController {
         Customer customer = this.customerService.get(animalSaveRequest.getCustomerId());
         animalSaveRequest.setCustomerId(0L);
 
-        Animal saveAnimal = this.modelMapper.forRequest().map(animalSaveRequest, Animal.class);
+        Animal saveAnimal = this.animalService.toAnimal(animalSaveRequest);
         saveAnimal.setCustomer(customer);
 
         this.animalService.save(saveAnimal);
-        return ResultHelper.created(this.modelMapper.forResponse().map(saveAnimal, AnimalResponse.class));
+        return ResultHelper.created(this.animalService.toResponse(saveAnimal));
 
     }
     // Endpoint to retrieve an animal by ID
@@ -51,7 +50,7 @@ public class AnimalController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> get(@PathVariable("id") Long id) {
         Animal animal = this.animalService.get(id);
-        AnimalResponse animalResponse = this.modelMapper.forResponse().map(animal, AnimalResponse.class);
+        AnimalResponse animalResponse = this.animalService.toResponse(animal);
         return ResultHelper.success(animalResponse);
     }
     // Endpoint to retrieve a paginated list of animals
@@ -62,7 +61,7 @@ public class AnimalController {
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
         Page<Animal> animalPage = this.animalService.cursor(page, pageSize);
         Page<AnimalResponse> animalResponsePage = animalPage
-                .map(animal -> this.modelMapper.forResponse().map(animal, AnimalResponse.class));
+                .map(this.animalService::toResponse);
         return ResultHelper.cursor(animalResponsePage);
     }
     // Endpoint to update an existing animal
@@ -70,10 +69,10 @@ public class AnimalController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> update(@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest) {
         this.animalService.get(animalUpdateRequest.getId());
-        Animal updateAnimal = this.modelMapper.forRequest().map(animalUpdateRequest, Animal.class);
+        Animal updateAnimal = this.animalService.toAnimal(animalUpdateRequest);
 
         this.animalService.update(updateAnimal);
-        return ResultHelper.success(this.modelMapper.forResponse().map(updateAnimal, AnimalResponse.class));
+        return ResultHelper.success(this.animalService.toResponse(updateAnimal));
     }
     // Endpoint to delete an animal by ID
     @DeleteMapping("/{id}")
@@ -90,7 +89,7 @@ public class AnimalController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> getAnimalByName(@PathVariable("name") String name) {
         Animal animal = this.animalService.findByAnimalName(name);
-        return ResultHelper.success(this.modelMapper.forResponse().map(animal, AnimalResponse.class));
+        return ResultHelper.success(this.animalService.toResponse(animal));
     }
 
 }

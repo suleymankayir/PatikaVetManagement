@@ -1,6 +1,7 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.IAppointmentService;
+import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.exception.AppointmentExistException;
 import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
@@ -8,6 +9,9 @@ import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.AnimalRepo;
 import dev.patika.VetManagement.dao.AppointmentRepo;
 import dev.patika.VetManagement.dao.DoctorRepo;
+import dev.patika.VetManagement.dto.request.appointment.AppointmentSaveRequest;
+import dev.patika.VetManagement.dto.request.appointment.AppointmentUpdateRequest;
+import dev.patika.VetManagement.dto.response.appointment.AppointmentResponse;
 import dev.patika.VetManagement.entities.Animal;
 import dev.patika.VetManagement.entities.Appointment;
 import dev.patika.VetManagement.entities.AvailableDate;
@@ -28,13 +32,14 @@ public class AppointmentManager implements IAppointmentService {
 
     private final AppointmentRepo appointmentRepo;
     private final DoctorRepo doctorRepo;
-
     private final AnimalRepo animalRepo;
+    private final IModelMapperService modelMapper;
 
-    public AppointmentManager(AppointmentRepo appointmentRepo, DoctorRepo doctorRepo, AnimalRepo animalRepo) {
+    public AppointmentManager(AppointmentRepo appointmentRepo, DoctorRepo doctorRepo, AnimalRepo animalRepo, IModelMapperService modelMapper) {
         this.appointmentRepo = appointmentRepo;
         this.doctorRepo = doctorRepo;
         this.animalRepo = animalRepo;
+        this.modelMapper = modelMapper;
     }
     // Değerlendirme Formu - 14
     @Override
@@ -116,6 +121,21 @@ public class AppointmentManager implements IAppointmentService {
         return this.appointmentRepo.findByDateTimeBetweenAndAnimal(start, end, animal.get());
 
 
+    }
+
+    @Override
+    public Appointment toAppointment(AppointmentSaveRequest appointmentSaveRequest) {
+        return this.modelMapper.forRequest().map(appointmentSaveRequest,Appointment.class);
+    }
+
+    @Override
+    public AppointmentResponse toResponse(Appointment appointment) {
+        return this.modelMapper.forResponse().map(appointment,AppointmentResponse.class);
+    }
+
+    @Override
+    public Appointment toAppointment(AppointmentUpdateRequest appointmentUpdateRequest) {
+        return this.modelMapper.forRequest().map(appointmentUpdateRequest,Appointment.class);
     }
 
 

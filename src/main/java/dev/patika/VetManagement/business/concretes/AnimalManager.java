@@ -1,11 +1,15 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.IAnimalService;
+import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
-import dev.patika.VetManagement.core.exception.NoExistanceException;
+import dev.patika.VetManagement.core.exception.NoExistenceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.AnimalRepo;
+import dev.patika.VetManagement.dto.request.animal.AnimalSaveRequest;
+import dev.patika.VetManagement.dto.request.animal.AnimalUpdateRequest;
+import dev.patika.VetManagement.dto.response.animal.AnimalResponse;
 import dev.patika.VetManagement.entities.Animal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,9 +22,11 @@ import java.util.Optional;
 public class AnimalManager implements IAnimalService {
 
     private final AnimalRepo animalRepo;
+    private final IModelMapperService modelMapper;
 
-    public AnimalManager(AnimalRepo animalRepo) {
+    public AnimalManager(AnimalRepo animalRepo, IModelMapperService modelMapper) {
         this.animalRepo = animalRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -65,10 +71,20 @@ public class AnimalManager implements IAnimalService {
 
         Animal animal = this.animalRepo.findByName(name);
         if (animal == null) {
-            throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır.");
+            throw new NoExistenceException(name + " bu isme ait bir bilgi bulunmamıştır.");
         }
         return this.animalRepo.findByName(name);
     }
 
+    public Animal toAnimal(AnimalSaveRequest animalSaveRequest){
+        return this.modelMapper.forRequest().map(animalSaveRequest,Animal.class);
+    }
 
+    public AnimalResponse toResponse(Animal animal){
+        return this.modelMapper.forResponse().map(animal,AnimalResponse.class);
+    }
+
+    public Animal toAnimal(AnimalUpdateRequest animalUpdateRequest){
+        return this.modelMapper.forRequest().map(animalUpdateRequest,Animal.class);
+    }
 }

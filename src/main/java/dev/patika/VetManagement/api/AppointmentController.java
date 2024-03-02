@@ -27,13 +27,12 @@ import java.util.List;
 public class AppointmentController {
 
     private final IAppointmentService appointmentService;
-    private final IModelMapperService modelMapper;
+
     private final IAnimalService animalService;
     private final IDoctorService doctorService;
     // Constructor injecting necessary services for appointment management
-    public AppointmentController(IAppointmentService appointmentService, IModelMapperService modelMapper, IAnimalService animalService, IDoctorService doctorService) {
+    public AppointmentController(IAppointmentService appointmentService, IAnimalService animalService, IDoctorService doctorService) {
         this.appointmentService = appointmentService;
-        this.modelMapper = modelMapper;
         this.animalService = animalService;
         this.doctorService = doctorService;
     }
@@ -48,11 +47,11 @@ public class AppointmentController {
         Doctor doctor = this.doctorService.get(appointmentSaveRequest.getDoctorId());
         appointmentSaveRequest.setDoctorId(0L);
 
-        Appointment saveAppointment = this.modelMapper.forRequest().map(appointmentSaveRequest, Appointment.class);
+        Appointment saveAppointment = this.appointmentService.toAppointment(appointmentSaveRequest);
         saveAppointment.setAnimal(animal);
         saveAppointment.setDoctor(doctor);
         this.appointmentService.save(saveAppointment);
-        return ResultHelper.created(this.modelMapper.forResponse().map(saveAppointment, AppointmentResponse.class));
+        return ResultHelper.created(this.appointmentService.toResponse(saveAppointment));
     }
     // Endpoint to retrieve appointments with pagination
     @GetMapping()
@@ -63,7 +62,7 @@ public class AppointmentController {
     ) {
         Page<Appointment> appointmentPage = this.appointmentService.cursor(page, pageSize);
         Page<AppointmentResponse> appointmentResponsePage = appointmentPage
-                .map(appointment -> this.modelMapper.forResponse().map(appointment, AppointmentResponse.class));
+                .map(this.appointmentService::toResponse);
         return ResultHelper.cursor(appointmentResponsePage);
     }
     // Endpoint to retrieve a specific appointment by ID
@@ -71,7 +70,7 @@ public class AppointmentController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AppointmentResponse> get(@PathVariable("id") Long id) {
         Appointment appointment = this.appointmentService.get(id);
-        AppointmentResponse appointmentResponse = this.modelMapper.forResponse().map(appointment, AppointmentResponse.class);
+        AppointmentResponse appointmentResponse = this.appointmentService.toResponse(appointment);
         return ResultHelper.success(appointmentResponse);
     }
     // Endpoint to update an existing appointment
@@ -79,9 +78,9 @@ public class AppointmentController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AppointmentResponse> update(@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) {
         this.appointmentService.get(appointmentUpdateRequest.getId());
-        Appointment updateAppointment = this.modelMapper.forRequest().map(appointmentUpdateRequest, Appointment.class);
+        Appointment updateAppointment = this.appointmentService.toAppointment(appointmentUpdateRequest);
         this.appointmentService.update(updateAppointment);
-        return ResultHelper.success(this.modelMapper.forResponse().map(updateAppointment, AppointmentResponse.class));
+        return ResultHelper.success(this.appointmentService.toResponse(updateAppointment));
     }
     // Endpoint to retrieve appointments for a specific doctor within a date range
     @DeleteMapping("/{id}")
@@ -105,7 +104,7 @@ public class AppointmentController {
     // Değerlendirme Formu - 23
     // Endpoint to retrieve appointments for a specific animal within a date range
     @GetMapping("/appointmentsByAnimal")
-   @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     public List<Appointment> getAppointmentsByAnimal(
             @RequestParam(name = "animalId") Long animalId,
             @RequestParam(name = "startDate") LocalDate startDate,
