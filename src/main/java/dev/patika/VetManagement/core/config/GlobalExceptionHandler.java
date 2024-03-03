@@ -2,7 +2,7 @@ package dev.patika.VetManagement.core.config;
 
 import dev.patika.VetManagement.core.exception.AppointmentExistException;
 import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
-import dev.patika.VetManagement.core.exception.NoExistanceException;
+import dev.patika.VetManagement.core.exception.NoExistenceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
@@ -38,8 +38,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NoExistanceException.class)
-    public ResponseEntity<Result> handleNoExistanceException(NoExistanceException e) {
+    @ExceptionHandler(NoExistenceException.class)
+    public ResponseEntity<Result> handleNoExistenceException(NoExistenceException e) {
         return new ResponseEntity<>(ResultHelper.nullError(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 

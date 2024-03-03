@@ -2,10 +2,14 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.IVaccineService;
+import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.VaccineRepo;
+import dev.patika.VetManagement.dto.request.vaccine.VaccineSaveRequest;
+import dev.patika.VetManagement.dto.request.vaccine.VaccineUpdateRequest;
+import dev.patika.VetManagement.dto.response.vaccine.VaccineResponse;
 import dev.patika.VetManagement.entities.Vaccine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,14 +24,16 @@ import java.util.Optional;
 public class VaccineManager implements IVaccineService {
 
     private final VaccineRepo vaccineRepo;
+    private final IModelMapperService modelMapper;
 
-    public VaccineManager(VaccineRepo vaccineRepo) {
+    public VaccineManager(VaccineRepo vaccineRepo, IModelMapperService modelMapper) {
         this.vaccineRepo = vaccineRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public Vaccine save(Vaccine vaccine) {
-        Optional<Vaccine> vaccineFromDb = this.vaccineRepo.findByNameAndCodeAndStartDateAndFinishDateAndAnimal(vaccine.getName(), vaccine.getCode(), vaccine.getStartDate(), vaccine.getFinishDate(),vaccine.getAnimal());
+        Optional<Vaccine> vaccineFromDb = this.vaccineRepo.findByNameAndCodeAndStartDateAndFinishDateAndAnimal(vaccine.getName(), vaccine.getCode(), vaccine.getStartDate(), vaccine.getFinishDate(), vaccine.getAnimal());
         if (vaccineFromDb.isPresent()) {
             throw new EntityAlreadyExistException(vaccineFromDb.get().getId(), Vaccine.class);
         }
@@ -68,6 +74,21 @@ public class VaccineManager implements IVaccineService {
     @Override
     public List<Vaccine> getVaccinesByDate(LocalDate startDate, LocalDate finishDate) {
         return this.vaccineRepo.findByFinishDateBetween(startDate, finishDate);
+    }
+
+    @Override
+    public Vaccine toVaccine(VaccineSaveRequest vaccineSaveRequest) {
+        return this.modelMapper.forRequest().map(vaccineSaveRequest, Vaccine.class);
+    }
+
+    @Override
+    public VaccineResponse toResponse(Vaccine vaccine) {
+        return this.modelMapper.forResponse().map(vaccine, VaccineResponse.class);
+    }
+
+    @Override
+    public Vaccine toVaccine(VaccineUpdateRequest vaccineUpdateRequest) {
+        return this.modelMapper.forRequest().map(vaccineUpdateRequest, Vaccine.class);
     }
 
 

@@ -2,7 +2,6 @@ package dev.patika.VetManagement.api;
 
 import dev.patika.VetManagement.business.abstracts.IAnimalService;
 import dev.patika.VetManagement.business.abstracts.IVaccineService;
-import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
@@ -27,14 +26,15 @@ import java.util.List;
 public class VaccineController {
 
     private final IVaccineService vaccineService;
-    private final IModelMapperService modelMapper;
+
     private final IAnimalService animalService;
+
     // Constructor injecting necessary services for vaccine management
-    public VaccineController(IVaccineService vaccineService, IModelMapperService modelMapper, IAnimalService animalService) {
+    public VaccineController(IVaccineService vaccineService, IAnimalService animalService) {
         this.vaccineService = vaccineService;
-        this.modelMapper = modelMapper;
         this.animalService = animalService;
     }
+
     // Değerlendirme Formu - 15
     // Endpoint to create a new vaccine
     @PostMapping()
@@ -43,20 +43,22 @@ public class VaccineController {
         Animal animal = this.animalService.get(vaccineSaveRequest.getAnimalId());
         vaccineSaveRequest.setAnimalId(0L);
 
-        Vaccine saveVaccine = this.modelMapper.forRequest().map(vaccineSaveRequest, Vaccine.class);
+        Vaccine saveVaccine = this.vaccineService.toVaccine(vaccineSaveRequest);
         saveVaccine.setAnimal(animal);
 
         this.vaccineService.save(saveVaccine);
-        return ResultHelper.created(this.modelMapper.forResponse().map(saveVaccine, VaccineResponse.class));
+        return ResultHelper.created(this.vaccineService.toResponse(saveVaccine));
     }
+
     // Endpoint to retrieve a vaccine by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<VaccineResponse> get(@PathVariable("id") Long id) {
         Vaccine vaccine = this.vaccineService.get(id);
-        VaccineResponse vaccineResponse = this.modelMapper.forResponse().map(vaccine, VaccineResponse.class);
+        VaccineResponse vaccineResponse = this.vaccineService.toResponse(vaccine);
         return ResultHelper.success(vaccineResponse);
     }
+
     // Endpoint to retrieve a paginated list of vaccines
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -66,18 +68,20 @@ public class VaccineController {
     ) {
         Page<Vaccine> vaccinePage = this.vaccineService.cursor(page, pageSize);
         Page<VaccineResponse> vaccineResponsePage = vaccinePage
-                .map(vaccine -> this.modelMapper.forResponse().map(vaccine, VaccineResponse.class));
+                .map(this.vaccineService::toResponse);
         return ResultHelper.cursor(vaccineResponsePage);
     }
+
     // Endpoint to update an existing vaccine
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<VaccineResponse> update(@Valid @RequestBody VaccineUpdateRequest vaccineUpdateRequest) {
         this.vaccineService.get(vaccineUpdateRequest.getId());
-        Vaccine updateVaccine = this.modelMapper.forRequest().map(vaccineUpdateRequest, Vaccine.class);
+        Vaccine updateVaccine = this.vaccineService.toVaccine(vaccineUpdateRequest);
         this.vaccineService.update(updateVaccine);
-        return ResultHelper.success(this.modelMapper.forResponse().map(updateVaccine, VaccineResponse.class));
+        return ResultHelper.success(this.vaccineService.toResponse(updateVaccine));
     }
+
     // Endpoint to delete a vaccine by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -85,6 +89,7 @@ public class VaccineController {
         this.vaccineService.delete(id);
         return ResultHelper.ok();
     }
+
     // Değerlendirme Formu - 20
     // Endpoint to retrieve all vaccines of an animal by animal ID
     @GetMapping("/{id}/animalvaccines")
@@ -96,11 +101,12 @@ public class VaccineController {
         List<VaccineResponse> vaccineResponseList = new ArrayList<>();
 
         for (Vaccine vaccine : vaccineList) {
-            vaccineResponseList.add(this.modelMapper.forResponse().map(vaccine, VaccineResponse.class));
+            vaccineResponseList.add(this.vaccineService.toResponse(vaccine));
         }
 
         return ResultHelper.success(vaccineResponseList);
     }
+
     // Değerlendirme Formu - 21
     // Endpoint to retrieve all vaccines within a date range
     @GetMapping("/vaccineByDate")

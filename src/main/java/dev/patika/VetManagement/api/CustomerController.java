@@ -1,7 +1,7 @@
 package dev.patika.VetManagement.api;
 
+import dev.patika.VetManagement.business.abstracts.IAnimalService;
 import dev.patika.VetManagement.business.abstracts.ICustomerService;
-import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
@@ -24,14 +24,15 @@ import java.util.List;
 @RequestMapping("/v1/customers")
 public class CustomerController {
 
-
     private final ICustomerService customerService;
+    private final IAnimalService animalService;
 
-    private final IModelMapperService modelMapper;
+
     // Constructor injecting necessary services for customer management
-    public CustomerController(ICustomerService customerService, IModelMapperService modelMapper) {
+    public CustomerController(ICustomerService customerService, IAnimalService animalService) {
         this.customerService = customerService;
-        this.modelMapper = modelMapper;
+        this.animalService = animalService;
+
     }
 
     // Değerlendirme Formu - 10
@@ -39,11 +40,12 @@ public class CustomerController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<CustomerResponse> save(@Valid @RequestBody CustomerSaveRequest customerSaveRequest) {
-        Customer saveCustomer = this.modelMapper.forRequest().map(customerSaveRequest, Customer.class);
+        Customer saveCustomer = this.customerService.toCustomer(customerSaveRequest);
         this.customerService.save(saveCustomer);
-        return ResultHelper.created(this.modelMapper.forResponse().map(saveCustomer, CustomerResponse.class));
+        return ResultHelper.created(this.customerService.toResponse(saveCustomer));
 
     }
+
     // Endpoint to retrieve a paginated list of customers
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -53,26 +55,29 @@ public class CustomerController {
     ) {
         Page<Customer> customerPage = this.customerService.cursor(page, pageSize);
         Page<CustomerResponse> customerResponsePage = customerPage
-                .map(customer -> this.modelMapper.forResponse().map(customer, CustomerResponse.class));
+                .map(this.customerService::toResponse);
         return ResultHelper.cursor(customerResponsePage);
     }
+
     // Endpoint to retrieve a customer by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> get(@PathVariable("id") Long id) {
         Customer customer = this.customerService.get(id);
-        CustomerResponse customerResponse = this.modelMapper.forResponse().map(customer, CustomerResponse.class);
+        CustomerResponse customerResponse = this.customerService.toResponse(customer);
         return ResultHelper.success(customerResponse);
     }
+
     // Endpoint to update an existing customer
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> update(@Valid @RequestBody CustomerUpdateRequest customerUpdateRequest) {
         this.customerService.get(customerUpdateRequest.getId());
-        Customer updateCustomer = this.modelMapper.forRequest().map(customerUpdateRequest, Customer.class);
+        Customer updateCustomer = this.customerService.toCustomer(customerUpdateRequest);
         this.customerService.update(updateCustomer);
-        return ResultHelper.success(this.modelMapper.forResponse().map(updateCustomer, CustomerResponse.class));
+        return ResultHelper.success(this.customerService.toResponse(updateCustomer));
     }
+
     // Endpoint to delete a customer by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -87,10 +92,9 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CustomerResponse> getCustomerByName(@PathVariable("name") String name) {
         Customer customer = this.customerService.findByCustomerName(name);
-
-
-        return ResultHelper.success(this.modelMapper.forResponse().map(customer, CustomerResponse.class));
+        return ResultHelper.success(this.customerService.toResponse(customer));
     }
+
     // Değerlendirme Formu - 18
     // Endpoint to retrieve animals owned by a customer
     @GetMapping("/{customerId}/animals")
@@ -101,7 +105,7 @@ public class CustomerController {
         List<AnimalResponse> animalResponses = new ArrayList<>();
 
         for (Animal animal : animals) {
-            animalResponses.add(this.modelMapper.forResponse().map(animal, AnimalResponse.class));
+            animalResponses.add(this.animalService.toResponse(animal));
         }
 
         return ResultHelper.success(animalResponses);

@@ -2,7 +2,6 @@ package dev.patika.VetManagement.api;
 
 import dev.patika.VetManagement.business.abstracts.IAnimalService;
 import dev.patika.VetManagement.business.abstracts.ICustomerService;
-import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
@@ -22,14 +21,14 @@ import org.springframework.web.bind.annotation.*;
 public class AnimalController {
 
     private final IAnimalService animalService;
-
-
     private final ICustomerService customerService;
+
     // Constructor injecting necessary services for animal management
     public AnimalController(IAnimalService animalService, ICustomerService customerService) {
         this.animalService = animalService;
         this.customerService = customerService;
     }
+
     // Değerlendirme Formu - 11
     // Endpoint to create a new animal
     @PostMapping()
@@ -45,6 +44,7 @@ public class AnimalController {
         return ResultHelper.created(this.animalService.toResponse(saveAnimal));
 
     }
+
     // Endpoint to retrieve an animal by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -53,6 +53,7 @@ public class AnimalController {
         AnimalResponse animalResponse = this.animalService.toResponse(animal);
         return ResultHelper.success(animalResponse);
     }
+
     // Endpoint to retrieve a paginated list of animals
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -64,6 +65,7 @@ public class AnimalController {
                 .map(this.animalService::toResponse);
         return ResultHelper.cursor(animalResponsePage);
     }
+
     // Endpoint to update an existing animal
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -74,6 +76,7 @@ public class AnimalController {
         this.animalService.update(updateAnimal);
         return ResultHelper.success(this.animalService.toResponse(updateAnimal));
     }
+
     // Endpoint to delete an animal by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

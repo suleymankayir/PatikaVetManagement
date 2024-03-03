@@ -1,7 +1,6 @@
 package dev.patika.VetManagement.api;
 
 import dev.patika.VetManagement.business.abstracts.IDoctorService;
-import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
@@ -21,11 +20,11 @@ public class DoctorController {
 
 
     private final IDoctorService doctorService;
-    private final IModelMapperService modelMapper;
+
     // Constructor injecting necessary services for doctor management
-    public DoctorController(IDoctorService doctorService, IModelMapperService modelMapper) {
+    public DoctorController(IDoctorService doctorService) {
         this.doctorService = doctorService;
-        this.modelMapper = modelMapper;
+
     }
 
     // Değerlendirme Formu - 12
@@ -33,10 +32,11 @@ public class DoctorController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<DoctorResponse> save(@Valid @RequestBody DoctorSaveRequest doctorSaveRequest) {
-        Doctor saveDoctor = this.modelMapper.forRequest().map(doctorSaveRequest, Doctor.class);
+        Doctor saveDoctor = this.doctorService.toDoctor(doctorSaveRequest);
         this.doctorService.save(saveDoctor);
-        return ResultHelper.created(this.modelMapper.forResponse().map(saveDoctor, DoctorResponse.class));
+        return ResultHelper.created(this.doctorService.toResponse(saveDoctor));
     }
+
     // Endpoint to retrieve a paginated list of doctors
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -46,28 +46,31 @@ public class DoctorController {
     ) {
         Page<Doctor> doctorPage = this.doctorService.cursor(page, pageSize);
         Page<DoctorResponse> doctorResponsePage = doctorPage
-                .map(doctor -> this.modelMapper.forResponse().map(doctor, DoctorResponse.class));
+                .map(this.doctorService::toResponse);
         return ResultHelper.cursor(doctorResponsePage);
 
     }
+
     // Endpoint to retrieve a doctor by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<DoctorResponse> get(@PathVariable("id") Long id) {
         Doctor doctor = this.doctorService.get(id);
-        DoctorResponse doctorResponse = this.modelMapper.forResponse().map(doctor, DoctorResponse.class);
+        DoctorResponse doctorResponse = this.doctorService.toResponse(doctor);
         return ResultHelper.success(doctorResponse);
     }
+
     // Endpoint to update an existing doctor
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<DoctorResponse> update(@Valid @RequestBody DoctorUpdateRequest doctorUpdateRequest) {
         this.doctorService.get(doctorUpdateRequest.getId());
-        Doctor updateDoctor = this.modelMapper.forRequest().map(doctorUpdateRequest, Doctor.class);
+        Doctor updateDoctor = this.doctorService.toDoctor(doctorUpdateRequest);
         this.doctorService.update(updateDoctor);
-        return ResultHelper.success(this.modelMapper.forResponse().map(updateDoctor, DoctorResponse.class));
+        return ResultHelper.success(this.doctorService.toResponse(updateDoctor));
 
     }
+
     // Endpoint to delete a doctor by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

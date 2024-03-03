@@ -20,7 +20,9 @@ public interface IAnimalService {
     Animal findByAnimalName(String name);
 
     Animal toAnimal(AnimalSaveRequest animalSaveRequest);
+
     AnimalResponse toResponse(Animal animal);
+
     Animal toAnimal(AnimalUpdateRequest animalUpdateRequest);
 
 

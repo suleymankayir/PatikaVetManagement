@@ -1,12 +1,8 @@
 package dev.patika.VetManagement.business.abstracts;
 
-import dev.patika.VetManagement.dto.request.animal.AnimalSaveRequest;
-import dev.patika.VetManagement.dto.request.animal.AnimalUpdateRequest;
 import dev.patika.VetManagement.dto.request.appointment.AppointmentSaveRequest;
 import dev.patika.VetManagement.dto.request.appointment.AppointmentUpdateRequest;
-import dev.patika.VetManagement.dto.response.animal.AnimalResponse;
 import dev.patika.VetManagement.dto.response.appointment.AppointmentResponse;
-import dev.patika.VetManagement.entities.Animal;
 import dev.patika.VetManagement.entities.Appointment;
 import org.springframework.data.domain.Page;
 
@@ -29,6 +25,8 @@ public interface IAppointmentService {
     List<Appointment> getAppointmentsByAnimal(Long id, LocalDateTime start, LocalDateTime end);
 
     Appointment toAppointment(AppointmentSaveRequest appointmentSaveRequest);
+
     AppointmentResponse toResponse(Appointment appointment);
+
     Appointment toAppointment(AppointmentUpdateRequest appointmentUpdateRequest);
 }

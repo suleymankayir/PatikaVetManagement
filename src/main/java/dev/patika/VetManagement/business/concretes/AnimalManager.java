@@ -76,15 +76,15 @@ public class AnimalManager implements IAnimalService {
         return this.animalRepo.findByName(name);
     }
 
-    public Animal toAnimal(AnimalSaveRequest animalSaveRequest){
-        return this.modelMapper.forRequest().map(animalSaveRequest,Animal.class);
+    public Animal toAnimal(AnimalSaveRequest animalSaveRequest) {
+        return this.modelMapper.forRequest().map(animalSaveRequest, Animal.class);
     }
 
-    public AnimalResponse toResponse(Animal animal){
-        return this.modelMapper.forResponse().map(animal,AnimalResponse.class);
+    public AnimalResponse toResponse(Animal animal) {
+        return this.modelMapper.forResponse().map(animal, AnimalResponse.class);
     }
 
-    public Animal toAnimal(AnimalUpdateRequest animalUpdateRequest){
-        return this.modelMapper.forRequest().map(animalUpdateRequest,Animal.class);
+    public Animal toAnimal(AnimalUpdateRequest animalUpdateRequest) {
+        return this.modelMapper.forRequest().map(animalUpdateRequest, Animal.class);
     }
 }

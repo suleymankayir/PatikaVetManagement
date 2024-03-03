@@ -3,7 +3,6 @@ package dev.patika.VetManagement.api;
 import dev.patika.VetManagement.business.abstracts.IAnimalService;
 import dev.patika.VetManagement.business.abstracts.IAppointmentService;
 import dev.patika.VetManagement.business.abstracts.IDoctorService;
-import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
@@ -27,15 +26,16 @@ import java.util.List;
 public class AppointmentController {
 
     private final IAppointmentService appointmentService;
-
     private final IAnimalService animalService;
     private final IDoctorService doctorService;
+
     // Constructor injecting necessary services for appointment management
     public AppointmentController(IAppointmentService appointmentService, IAnimalService animalService, IDoctorService doctorService) {
         this.appointmentService = appointmentService;
         this.animalService = animalService;
         this.doctorService = doctorService;
     }
+
     // Endpoint to create a new appointment
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
@@ -53,6 +53,7 @@ public class AppointmentController {
         this.appointmentService.save(saveAppointment);
         return ResultHelper.created(this.appointmentService.toResponse(saveAppointment));
     }
+
     // Endpoint to retrieve appointments with pagination
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -65,6 +66,7 @@ public class AppointmentController {
                 .map(this.appointmentService::toResponse);
         return ResultHelper.cursor(appointmentResponsePage);
     }
+
     // Endpoint to retrieve a specific appointment by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -73,6 +75,7 @@ public class AppointmentController {
         AppointmentResponse appointmentResponse = this.appointmentService.toResponse(appointment);
         return ResultHelper.success(appointmentResponse);
     }
+
     // Endpoint to update an existing appointment
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -82,6 +85,7 @@ public class AppointmentController {
         this.appointmentService.update(updateAppointment);
         return ResultHelper.success(this.appointmentService.toResponse(updateAppointment));
     }
+
     // Endpoint to retrieve appointments for a specific doctor within a date range
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -89,6 +93,7 @@ public class AppointmentController {
         this.appointmentService.delete(id);
         return ResultHelper.ok();
     }
+
     // Değerlendirme Formu - 24
     // Endpoint to retrieve appointments for a specific doctor within a date range
     @GetMapping("/appointmentsByDoctor")
@@ -101,6 +106,7 @@ public class AppointmentController {
         return this.appointmentService.getAppointmentsByDoctor(doctorId, startDate.atStartOfDay(), endDate.atStartOfDay());
 
     }
+
     // Değerlendirme Formu - 23
     // Endpoint to retrieve appointments for a specific animal within a date range
     @GetMapping("/appointmentsByAnimal")

@@ -2,7 +2,6 @@ package dev.patika.VetManagement.api;
 
 import dev.patika.VetManagement.business.abstracts.IAvailableDateService;
 import dev.patika.VetManagement.business.abstracts.IDoctorService;
-import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.result.Result;
 import dev.patika.VetManagement.core.result.ResultData;
 import dev.patika.VetManagement.core.utilities.ResultHelper;
@@ -22,15 +21,15 @@ import org.springframework.web.bind.annotation.*;
 public class AvailableDateController {
 
     private final IAvailableDateService availableDateService;
-    private final IModelMapperService modelMapper;
     private final IDoctorService doctorService;
 
     // Constructor injecting necessary services for available date management
-    public AvailableDateController(IAvailableDateService availableDateService, IModelMapperService modelMapper, IDoctorService doctorService) {
+    public AvailableDateController(IAvailableDateService availableDateService, IDoctorService doctorService) {
         this.availableDateService = availableDateService;
-        this.modelMapper = modelMapper;
+
         this.doctorService = doctorService;
     }
+
     // Değerlendirme Formu - 13
     // Endpoint to create a new available date
     @PostMapping()
@@ -39,22 +38,24 @@ public class AvailableDateController {
         Doctor doctor = this.doctorService.get(availableDateSaveRequest.getDoctorId());
         availableDateSaveRequest.setDoctorId(0L);
 
-        AvailableDate saveDate = this.modelMapper.forRequest().map(availableDateSaveRequest, AvailableDate.class);
+        AvailableDate saveDate = this.availableDateService.toAvailableDate(availableDateSaveRequest);
         saveDate.setDoctor(doctor);
 
         this.availableDateService.save(saveDate);
-        return ResultHelper.created(this.modelMapper.forResponse().map(saveDate, AvailableDateResponse.class));
+        return ResultHelper.created(this.availableDateService.toResponse(saveDate));
 
 
     }
+
     // Endpoint to retrieve an available date by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AvailableDateResponse> get(@PathVariable("id") Long id) {
         AvailableDate availableDate = this.availableDateService.get(id);
-        AvailableDateResponse availableDateResponse = this.modelMapper.forResponse().map(availableDate, AvailableDateResponse.class);
+        AvailableDateResponse availableDateResponse = this.availableDateService.toResponse(availableDate);
         return ResultHelper.success(availableDateResponse);
     }
+
     // Endpoint to retrieve a paginated list of available dates
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -64,18 +65,20 @@ public class AvailableDateController {
     ) {
         Page<AvailableDate> availableDatePage = this.availableDateService.cursor(page, pageSize);
         Page<AvailableDateResponse> availableDateResponsePage = availableDatePage
-                .map(availableDate -> this.modelMapper.forResponse().map(availableDate, AvailableDateResponse.class));
+                .map(this.availableDateService::toResponse);
         return ResultHelper.cursor(availableDateResponsePage);
     }
+
     // Endpoint to update an existing available date
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AvailableDateResponse> update(@Valid @RequestBody AvailableDateUpdateRequest availableDateUpdateRequest) {
         this.availableDateService.get(availableDateUpdateRequest.getId());
-        AvailableDate date = this.modelMapper.forRequest().map(availableDateUpdateRequest, AvailableDate.class);
+        AvailableDate date = this.availableDateService.toAvailableDate(availableDateUpdateRequest);
         this.availableDateService.update(date);
-        return ResultHelper.success(this.modelMapper.forResponse().map(date, AvailableDateResponse.class));
+        return ResultHelper.success(this.availableDateService.toResponse(date));
     }
+
     // Endpoint to delete an available date by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

@@ -1,11 +1,15 @@
 package dev.patika.VetManagement.business.concretes;
 
 import dev.patika.VetManagement.business.abstracts.ICustomerService;
+import dev.patika.VetManagement.core.config.modelMapper.IModelMapperService;
 import dev.patika.VetManagement.core.exception.EntityAlreadyExistException;
-import dev.patika.VetManagement.core.exception.NoExistanceException;
+import dev.patika.VetManagement.core.exception.NoExistenceException;
 import dev.patika.VetManagement.core.exception.NotFoundException;
 import dev.patika.VetManagement.core.utilities.Msg;
 import dev.patika.VetManagement.dao.CustomerRepo;
+import dev.patika.VetManagement.dto.request.customer.CustomerSaveRequest;
+import dev.patika.VetManagement.dto.request.customer.CustomerUpdateRequest;
+import dev.patika.VetManagement.dto.response.customer.CustomerResponse;
 import dev.patika.VetManagement.entities.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,9 +22,11 @@ import java.util.Optional;
 public class CustomerManager implements ICustomerService {
 
     private final CustomerRepo customerRepo;
+    private final IModelMapperService modelMapper;
 
-    public CustomerManager(CustomerRepo customerRepo) {
+    public CustomerManager(CustomerRepo customerRepo, IModelMapperService modelMapper) {
         this.customerRepo = customerRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -65,8 +71,23 @@ public class CustomerManager implements ICustomerService {
 
         Customer customer = this.customerRepo.findByName(name);
         if (customer == null) {
-            throw new NoExistanceException(name + " bu isme ait bir bilgi bulunmamıştır.");
+            throw new NoExistenceException(name + " bu isme ait bir bilgi bulunmamıştır.");
         }
         return customer;
+    }
+
+    @Override
+    public Customer toCustomer(CustomerSaveRequest customerSaveRequest) {
+        return this.modelMapper.forRequest().map(customerSaveRequest, Customer.class);
+    }
+
+    @Override
+    public CustomerResponse toResponse(Customer customer) {
+        return this.modelMapper.forResponse().map(customer, CustomerResponse.class);
+    }
+
+    @Override
+    public Customer toCustomer(CustomerUpdateRequest customerUpdateRequest) {
+        return this.modelMapper.forRequest().map(customerUpdateRequest, Customer.class);
     }
 }

@@ -41,10 +41,11 @@ public class AppointmentManager implements IAppointmentService {
         this.animalRepo = animalRepo;
         this.modelMapper = modelMapper;
     }
+
     // Değerlendirme Formu - 14
     @Override
     public Appointment save(Appointment appointment) {
-        Optional<Appointment> appointmentFromDb = this.appointmentRepo.findByDateTimeAndAnimalAndDoctor(appointment.getDateTime(),appointment.getAnimal(),appointment.getDoctor());
+        Optional<Appointment> appointmentFromDb = this.appointmentRepo.findByDateTimeAndAnimalAndDoctor(appointment.getDateTime(), appointment.getAnimal(), appointment.getDoctor());
         if (appointmentFromDb.isPresent()) {
             throw new EntityAlreadyExistException(appointmentFromDb.get().getId(), Appointment.class);
         }
@@ -125,17 +126,17 @@ public class AppointmentManager implements IAppointmentService {
 
     @Override
     public Appointment toAppointment(AppointmentSaveRequest appointmentSaveRequest) {
-        return this.modelMapper.forRequest().map(appointmentSaveRequest,Appointment.class);
+        return this.modelMapper.forRequest().map(appointmentSaveRequest, Appointment.class);
     }
 
     @Override
     public AppointmentResponse toResponse(Appointment appointment) {
-        return this.modelMapper.forResponse().map(appointment,AppointmentResponse.class);
+        return this.modelMapper.forResponse().map(appointment, AppointmentResponse.class);
     }
 
     @Override
     public Appointment toAppointment(AppointmentUpdateRequest appointmentUpdateRequest) {
-        return this.modelMapper.forRequest().map(appointmentUpdateRequest,Appointment.class);
+        return this.modelMapper.forRequest().map(appointmentUpdateRequest, Appointment.class);
     }
 
 
